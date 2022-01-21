@@ -17,193 +17,113 @@ The final product should work like this:
 
 ![To-do App final result](https://curriculum-content.s3.amazonaws.com/react-hooks-tdd/writing-integration-tests-lab/todo-app.gif)
 
+Note: it is not important to match this example exactly - you are free to style
+the app as you like. However, it should include all the demonstrated
+functionality.
+
 As always, you will follow the test-driven development process of writing the
 tests for a particular element or functionality, then writing the code to get
-the tests to pass.
+the tests to pass. We recommend completing all the requirements for the delete
+button first, then moving on to the done button.
+
+Once you are done, you can compare your code to the solution branch.
 
 ## Getting Started
 
 Fork and clone this repo, then run `npm install` and `npm test`. Open a second
 tab and run `npm start` so you can see your progress in the browser as well.
 
-Note that the files containing the tests and code for the base functionality
-have been provided for you. You will be adding your tests to `src/App.test.js`,
-and your code to `TodoList.js` and `Todo.js`.
+Note that the files containing the tests and code for the base functionality we
+built in the previous lesson have been provided for you. You will be adding your
+tests to `src/App.test.js`, and your code to `src/TodoList.js` and `src/Todo.js`.
 
 ## Instructions
 
+This lab consists of two tasks: adding a "delete" button and adding a "done"
+button. Take a look at the placeholders at the bottom of `src/App.test.js`. As
+you can see, you will need to construct a total of five integration tests: two
+tests for the initial state of `Todo.js` and three tests for user events.
 
+**Note:** because you will be testing functionality associated with individual
+to-dos, you will need to include code that simulates the user events for adding
+to-dos (typing the to-do into the input and clicking Submit) at the beginning of
+each test block. This code should come immediately after `render(<App />)` — see
+the last test that's currently in `App.test.js` for an example. We recommend
+adding two to-dos each time, as is done there.
 
-### Adding the Ability to Delete a To-Do
+### Delete Button
 
-Next we want to give the user the ability to delete individual to-dos. We'll add
-a delete button for each to-do in the list. Therefore, our test for the initial
-state of the `Todo` component will verify that the page contains the correct
-number of delete buttons:
-
-```jsx
-describe("Todo component initial status", () => {
-  test("each list item includes a delete button", () => {
-    render(<App />);
-  
-    const inputField = screen.getByPlaceholderText( /add to-do/i );
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    
-    userEvent.type(inputField, "take out the trash");
-    userEvent.click(submitButton);
-    userEvent.type(inputField, "walk the dog");
-    userEvent.click(submitButton);
-
-    expect(screen.getAllByRole("button", { name: /x/i }).length).toBe(2);
-  });
-});
-```
-
-Getting this test to pass is a simple matter of adding the button in the `Todo`
+To add the delete button to each to-do, you will simply add it in the `Todo`
 component:
 
 ```jsx
-  return (
-    <li>
-      {todo.text} 
-      <button>X</button>
-    </li>
-  )
+// Todo.js
+return (
+  <li>
+    {todo.text} 
+    <button>X</button>
+  </li>
+)
 ```
 
-The next step is to check that clicking the delete button will remove the
-associated to-do from the DOM. This gives us a bit of a problem. We need to
-simulate a user clicking the delete button, but we can't just use `getByRole` to
-access the button because there may be more than one delete button on the page,
-all with the same name ("X"). We need to be able to select the delete button
-that's associated with a particular to-do. To do this, we'll use another
-function provided by React Testing Library: [within][].
+However, testing the functionality of the button raises a bit of a problem. You
+will need to simulate a user clicking the delete button, but you can't just use
+`getByRole` to access the button because there may be more than one delete
+button on the page with the same name ("X"). You need to be able to select the
+delete button that's associated with a particular to-do.
 
-What `within` allows us to do is first find the `li` that contains the to-do to
-be deleted, then specify that we want the button "within" _that_ element.
+To do this, you will use another function provided by React Testing Library:
+[within][]. Note that `within` is already being imported in the `App.test.js`
+file.
 
-We'll start by adding `within` to the functions being imported from React
-Testing Library in `App.test.js`:
+`within` will allow you to first find the `li` that contains the to-do to be
+deleted, then specify that you want the button "within" _that_ element. The code
+will look something like this:
 
 ```jsx
-import { render, screen, within } from '@testing-library/react';
+render(<MyComponent />)
+
+const li = screen.getByRole("listitem", { name: /name of to-do/i });
+const button = within(li).getByRole("button", {name: /x/i });
 ```
 
-Then we can write our test:
+Once you've identified the button "within" the correct to-do and stored it in a
+variable, you can then use it in your user event.
 
-```jsx
-describe("Todo component user events", () => {
-  test("clicking the delete button for a to-do removes it from the list", () => {
-    render(<App />);
+### Done Button
 
-    const inputField = screen.getByPlaceholderText( /add to-do/i );
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    
-    userEvent.type(inputField, "take out the trash");
-    userEvent.click(submitButton);
-    userEvent.type(inputField, "walk the dog");
-    userEvent.click(submitButton);
-
-    const li = screen.getByText( /take out the trash/i );
-    const deleteButton = within(li).getByRole("button", { name: "X" });
-
-    userEvent.click(deleteButton);
-
-    expect(screen.queryByText (/take out the trash/i )).not.toBeInTheDocument();
-    expect(screen.getByText( /walk the dog/i )).toBeInTheDocument();
-  });
-});
-```
-
-There's a lot going on here, but everything other than the use of `within`
-should be familiar: we render the `App` component, simulate the user events to
-add to-dos, simulate the user event to delete one of them, and finally check the
-updated status of the page.
-
-Let's take a closer look at the code that finds the delete button associated with
-the `li` we want to delete:
-
-```jsx
-const li = screen.getByText( /take out the trash/i );
-const deleteButton = within(li).getByRole("button", { name: "X" });
-```
-
-Here, we're first finding the `li` that contains the to-do to be deleted, then
-specifying that we want the delete button that's "within" that li. Once we've
-identified the correct button and stored it in the `deleteButton` variable, we
-can use it in our simulated user event.
-
-To get this test passing, we'll add a `deleteTodo` function to `TodoList.js`:
-
-```jsx
-//TodoList.js
-const deleteTodo = (text) => {
-  setTodos(todos.filter((todo) => todo.text !== text))
-}
-```
-
-And pass it down as a prop to `Todo`:
-
-```jsx
-<ul>
-  {todos.map((todo) => (
-    <Todo
-      key={todo.text} 
-      todo={todo}
-      deleteTodo={deleteTodo}
-    />
-  ))}
-</ul>
-```
-
-Then in `Todo.js`, we'll add it to the variables being deconstructed from
-`props` and use it as the button's `onClick` handler:
-
-```jsx
-//Todo.js
-function Todo({todo, deleteTodo}) {
-  return (
-    <li>
-      {todo.text} 
-      <button onClick={() => deleteTodo(todo.text)}>X</button>
-    </li>
-  )
-}
-
-export default Todo;
-```
-
-With these changes, our test should be passing!
-
-### Your Turn
-
-Your task is to use test-driven development to add the ability for users to mark
-a to-do as done. You should have a test that checks each of the following:
+Your next task is to use test-driven development to add the ability for users to
+mark a to-do as done. The requirements for the done button's functionality are:
 
 - Each to-do in the list has a `done` button in addition to the delete button
-- When the user clicks the `done` button, the display of the to-do updates in
-  some way to indicate that the to-do is done. (Note: You are free to do this in
-  any way you like; one option would be displaying the text with strikethrough.)
-- When the user clicks the `done` button for a to-do, that button should be
+- When the user clicks the `done` button for a to-do, the text of the to-do
+  appears with strikethrough
+- When the user clicks the `done` button for a to-do, the button should be
   removed from the DOM
 
-The final product should look something like the following:
+There are a couple of different ways you could code the second requirement; we
+recommend creating a CSS class and using conditional rendering to add the class
+to the `li` when the to-do is marked as done.
 
-
-
-Once you've written a test, write the code to get it passing before continuing
-on to the next. When you're done, you can compare your code to the solution branch.
+**Hint**: to complete these requirements, you will need to keep track of each
+to-do's completion status in state.
 
 ## Conclusion
 
-In this code-along, you learned about the purpose of integration tests and how
-they differ from unit tests. You also got some practice writing integration
-tests using Jest and React Testing Library.
+In this lab, you got some practice writing integration tests using Jest and
+React Testing Library. By writing your tests to mirror how users will interact
+with your To-do app, you have increased your confidence that your app is
+functioning as desired.
 
-[eslint]: https://eslint.org/
-[typescript]: https://www.typescriptlang.org/
-[guiding-principles]: https://testing-library.com/docs/guiding-principles
-[source]: https://kentcdodds.com/blog/write-tests
-[testing-library]: https://testing-library.com/
-[getByPlaceholderText]: https://testing-library.com/docs/queries/byplaceholdertext/
+## Resources
+
+- [Testing Library: Queries][queries]
+- [Jest DOM - Custom Matchers][jest-dom]
+- [MDN: ARIA Role Reference][mdn-aria-roles]
+- [React Testing Library: within][within]
+
 [within]: https://testing-library.com/docs/dom-testing-library/api-within/
+[queries]: https://testing-library.com/docs/queries/about
+[jest-dom]: https://github.com/testing-library/jest-dom
+[mdn-aria-roles]:
+  https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques
