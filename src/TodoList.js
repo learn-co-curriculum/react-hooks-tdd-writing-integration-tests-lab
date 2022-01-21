@@ -11,7 +11,7 @@ function TodoList() {
 
   const addTodo = (e) => {
     e.preventDefault();
-    setTodos([...todos, { text: newTodo, done: false }]);
+    setTodos([...todos, { text: newTodo }]);
     setNewTodo("");
   };
 
