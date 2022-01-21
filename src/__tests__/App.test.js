@@ -39,9 +39,9 @@ describe("TodoList component user events", () => {
 });
 
 // Todo Component
-
 describe("Todo component initial status", () => {
-  test("each list item includes a delete button and a done button", () => {});
+  test("each list item includes a delete button", () => {});
+  test("each list item includes a done button", () => {});
 });
 
 describe("Todo component user events", () => {
