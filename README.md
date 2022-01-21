@@ -26,7 +26,7 @@ tests for a particular element or functionality, then writing the code to get
 the tests to pass. We recommend completing all the requirements for the delete
 button first, then moving on to the done button.
 
-Once you are done, you can compare your code to the solution branch.
+Once you are finished, you can compare your code to the solution branch.
 
 ## Getting Started
 
