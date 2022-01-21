@@ -1,32 +1,31 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import App from '../App';
+import App from "../App";
 
 // TodoList Component
 describe("TodoList component initial status", () => {
   test("todo list is initially empty", () => {
     render(<App />);
-  
+
     expect(screen.getByRole("list")).toBeInTheDocument();
     expect(screen.queryByRole("listitem")).not.toBeInTheDocument();
   });
-  
+
   test("the page includes an 'Add To-do' input element that has a submit button", () => {
     render(<App />);
-  
-    expect(screen.getByPlaceholderText( /add to-do/i )).toBeInTheDocument();
+
+    expect(screen.getByPlaceholderText(/add to-do/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
   });
-
 });
 
 describe("TodoList component user events", () => {
   test("when a new to-do is submitted it appears in the list of to-dos", () => {
     render(<App />);
 
-    const inputField = screen.getByPlaceholderText( /add to-do/i );
+    const inputField = screen.getByPlaceholderText(/add to-do/i);
     const submitButton = screen.getByRole("button", { name: /submit/i });
-    
+
     userEvent.type(inputField, "take out the trash");
     userEvent.click(submitButton);
     userEvent.type(inputField, "walk the dog");

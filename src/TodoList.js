@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import Todo from './Todo';
+import { useState } from "react";
+import Todo from "./Todo";
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
@@ -7,7 +7,7 @@ function TodoList() {
 
   const enterTodo = (e) => {
     setNewTodo(e.target.value);
-  }
+  };
 
   const addTodo = (e) => {
     e.preventDefault();
@@ -16,26 +16,24 @@ function TodoList() {
   };
 
   return (
-  <div>
-    <h1>My To-dos</h1>
-    <ul>
-      {todos.map((todo) => (
-        <Todo
-          key={todo.text} 
-          todo={todo}
+    <div>
+      <h1>My To-dos</h1>
+      <ul>
+        {todos.map((todo) => (
+          <Todo key={todo.text} todo={todo} />
+        ))}
+      </ul>
+      <form onSubmit={addTodo}>
+        <input
+          type="text"
+          onChange={enterTodo}
+          value={newTodo}
+          placeholder="Add to-do"
         />
-      ))}
-    </ul>
-    <form onSubmit={addTodo}>
-      <input 
-        type="text" 
-        onChange={enterTodo} 
-        value={newTodo} 
-        placeholder="Add to-do"
-      />
-      <input type="submit"/>
-    </form>
-  </div>
-  )};
+        <input type="submit" />
+      </form>
+    </div>
+  );
+}
 
 export default TodoList;

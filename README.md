@@ -35,7 +35,8 @@ tab and run `npm start` so you can see your progress in the browser as well.
 
 Note that the files containing the tests and code for the base functionality we
 built in the previous lesson have been provided for you. You will be adding your
-tests to `src/App.test.js`, and your code to `src/TodoList.js` and `src/Todo.js`.
+tests to `src/App.test.js`, and your code to `src/TodoList.js` and
+`src/Todo.js`.
 
 ## Instructions
 
@@ -60,10 +61,10 @@ component:
 // Todo.js
 return (
   <li>
-    {todo.text} 
+    {todo.text}
     <button>X</button>
   </li>
-)
+);
 ```
 
 However, testing the functionality of the button raises a bit of a problem. You
