@@ -83,7 +83,7 @@ will look something like this:
 ```jsx
 render(<MyComponent />)
 
-const li = screen.getByRole("listitem", { name: /name of to-do/i });
+const li = screen.getByText( /name of to-do/i };
 const button = within(li).getByRole("button", {name: /x/i });
 ```
 
