@@ -15,6 +15,14 @@ function TodoList() {
     setNewTodo("");
   };
 
+  const deleteTodo = (text) => {
+    setTodos(todos.filter((todo) => todo.text !== text))
+  }
+
+  const markDone = (text) => {
+    setTodos(todos.map((todo) => todo.text === text ? {...todo, done: true} : todo));
+  }
+
   return (
   <div>
     <h1>My To-dos</h1>
@@ -23,6 +31,8 @@ function TodoList() {
         <Todo
           key={todo.text} 
           todo={todo}
+          markDone={markDone}
+          deleteTodo={deleteTodo}
         />
       ))}
     </ul>
